@@ -4,15 +4,18 @@
 DESCRIPTION
 
     Detects when sound is higher than threshold and records it in the output
-    directory. Threshold is a number on a dB scale. A good value for threshold is
-    around 40-50. The default value is 45. The default output directory
-    is ./recorded_files/. Use Ctrl-c to exit the program.
+    directory with snoopy.py listen. Threshold is a number on a dB scale.
+    A good value for threshold is around 40-50. The default value is 45.
+    The default output directory is ./recorded_files/. Use Ctrl-c to exit the program.
+    Plays recorded files with snoopy.py play.
 
 EXAMPLES
 
-    snoopy.py
-    snoopy.py 40
-    snoopy.py 40 -o /output/dir/where/files/are/going/to/be/saved/
+    snoopy.py listen
+    snoopy.py listen 40
+    snoopy.py listen 40 -o /output/dir/where/files/are/going/to/be/saved/
+    snoopy.py play
+    snoopy.py play -o /output/dir/with/wav/files/
 
 AUTHOR
 

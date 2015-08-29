@@ -37,7 +37,7 @@ import sys
 import os
 import traceback
 
-CHUNK = 8096
+CHUNK = 8192
 FORMAT = pyaudio.paInt16
 #CHANNELS = 2
 #RATE = 44100
@@ -95,21 +95,25 @@ def main_listen (func, threshold, outdir):
         record_on = False
 
         while True:
-            data = stream.read(CHUNK)
-            data_is_loud = is_loud(data, threshold)
-            if not record_on and data_is_loud: 
-                record_on = True
-                print "Recording..."
-                wf = setup_wav_file(outdir, p, CHANNELS, RATE)
-                write_left_extension(wf, frames)
-            frames.append(data)
-            loudness.append(data_is_loud)
-            if record_on and quiet_for_some_time(loudness):
-                record_on = False
-                print "Done recording."
-                wf.close()
-            if record_on is True:
-                wf.writeframes(data)
+            try:
+                data = stream.read(CHUNK)
+            except IOError as e:
+                print 'Problem reading from stream. Probably input overflow. Ignoring...'
+            else:
+                data_is_loud = is_loud(data, threshold)
+                if not record_on and data_is_loud: 
+                    record_on = True
+                    print "Recording..."
+                    wf = setup_wav_file(outdir, p, CHANNELS, RATE)
+                    write_left_extension(wf, frames)
+                frames.append(data)
+                loudness.append(data_is_loud)
+                if record_on and quiet_for_some_time(loudness):
+                    record_on = False
+                    print "Done recording."
+                    wf.close()
+                if record_on is True:
+                    wf.writeframes(data)
     except NoDirError as e:
         print e
 

@@ -32,6 +32,7 @@ import wave
 import collections
 import audioop
 import time
+import datetime
 import math
 import sys
 import os
@@ -152,14 +153,22 @@ def main_listen (func, threshold, outdir):
     else:
         p.terminate()
 
-def main_play(func, outdir):
+def main_play(func, outdir, datestring):
 
     try:
         if not os.path.isdir(outdir):
             raise NoDirError(outdir)
         else:
+            if datestring == 'today':
+                substr_contained = time.strftime("%Y_%m_%d")
+            elif datestring == 'yesterday':
+                substr_contained = str(datetime.date.today() - datetime.timedelta(days=1)).replace('-', '_')
+            elif datestring == 'all':
+                substr_contained = ''
+            else:
+                substr_contained = datestring.replace('-', '_')
             wav_files = [os.path.join(outdir, fn) for fn in os.listdir(outdir) 
-                    if os.path.isfile(os.path.join(outdir,fn)) and fn.endswith('.wav')]
+                    if os.path.isfile(os.path.join(outdir,fn)) and fn.endswith('.wav') and substr_contained in fn]
         p = pyaudio.PyAudio()
         for wav_name in wav_files:
             wf = wave.open(wav_name, 'rb')
@@ -229,6 +238,8 @@ if __name__ == '__main__':
     parser_play = subparsers.add_parser('play', help='Plays recorded files')
     parser_play.add_argument('-o', '--outdir', help="Output directory",
             default="./recorded_files/")
+    parser_play.add_argument('-d', '--datestring', help="Date files were recorded",
+            default="today")
     parser_play.set_defaults(func=main_play)
 
     args = parser.parse_args()
